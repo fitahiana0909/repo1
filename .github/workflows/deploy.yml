@@ -1,0 +1,26 @@
+name: Déploiement auto sur le serveur
+
+on:
+  push:
+    branches:
+      - master  # Déclenchement quand on pousse sur master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Cloner le repo
+      uses: actions/checkout@v3
+
+    - name: Déploiement sur le serveur
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        script: |
+          cd /var/www/monapp
+          git pull origin master
+          npm install
+          pm2 restart monapp  # ou ton système de lancement (Docker, systemctl, etc.)
